@@ -56,7 +56,7 @@ This extension gives you a 7 day free trial. After that it costs $2, once only, 
 
 <br>
 
-## 🎉 UPDATE (13/12/2025) - GoodTube becomes an official browser extension!!
+## 🎉 UPDATE (13/12/2025)<br>GoodTube becomes an official browser extension!!
 
 Well - it's now been around one year since GoodTube was first released. What started out as a small personal project quickly gained popularity and has now grown to being used by almost 200,000 people from all over the world!
 
