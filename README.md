@@ -62,7 +62,7 @@ It's now been around one year since GoodTube was first released. What started ou
 
 I would like to say a huge THANK YOU to everyone who has been a part of this project so far. Your support really means a lot to me and I hope everyone is enjoying using GoodTube.
 
-Over the last few months, I've been working hard on upgrading this project and turning it into an official browser extension. This has not been an easy task...I've spent a lot of late nights spent coding, trying different things until, finally, everything came together.
+Over the last few months, I've been working hard on turning this into an official browser extension. This has not been an easy task...I've spent a lot of late nights spent coding, trying different things until, finally, everything came together.
 
 ⭐⭐ *I'm very happy to announce that the official GoodTube Browser Extension has now been released!!*  ⭐⭐
 
