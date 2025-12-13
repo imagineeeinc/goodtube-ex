@@ -43,7 +43,7 @@ https://addons.mozilla.org/en-US/firefox/addon/goodtube-adblock-for-youtube/
 
 <br>
 
-## ⭐ How is this adblocker different?
+## 🙌 How is this adblocker different?
 
 Normal adblockers use "filter lists" to identify and remove ads. Unfortunately this is not very reliable. Youtube keeps changing how their ads "look" and the filters must be constantly updated. They are also very easy to detect. You've probably had some issues with them being detected or not working over the last year or two.
 
