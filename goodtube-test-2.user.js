@@ -1739,10 +1739,40 @@
 	}
 
 	// Video has ended
-	function goodTube_nav_videoEnded() {
+	let goodTube_nav_videoEnded_timeout = setTimeout(() => {}, 0);
+	function goodTube_nav_videoEnded(videoId) {
+		// Re-fetch the page api
+		goodTube_page_api = document.getElementById('movie_player');
+
+		// Get the video data
+		let videoData = false;
+		if (goodTube_page_api && typeof goodTube_page_api.getVideoData === 'function') {
+			videoData = goodTube_page_api.getVideoData();
+		}
+
+		// Make sure we have the video data
+		if (!videoData) {
+			// Clear timeout first to solve memory leak issues
+			clearTimeout(goodTube_nav_videoEnded_timeout);
+
+			// Create a new timeout to try again
+			goodTube_nav_videoEnded_timeout = setTimeout(() => { goodTube_nav_videoEnded(videoId); }, 100);
+
+			// Don't do anything else
+			return;
+		}
+
+		// If we're not still on the video we're trying to skip
+		if (videoId !== videoData.video_id) {
+			console.log('DO NOT SKIP WRONG ID', videoId);
+
+			// Don't do anything else
+			return;
+		}
+
 		// If autoplay is enabled
 		if (goodTube_autoplay === 'true') {
-			console.log('autoplay is enabled, playing next video');
+			console.log('autoplay is enabled, playing next video from id', videoId);
 
 			// Play the next video
 			goodTube_nav_next();
@@ -1751,7 +1781,7 @@
 		else if (goodTube_playlist.length > 0) {
 			// If we're not on the last video
 			if (goodTube_playlistIndex < (goodTube_playlist.length - 1)) {
-				console.log('in playlist but not last video, playing next video');
+				console.log('in playlist but not last video, playing next video from id', videoId);
 
 				// Play the next video
 				goodTube_nav_next();
@@ -2003,8 +2033,10 @@
 		}
 
 		// Video has ended
-		else if (event.data === 'goodTube_videoEnded') {
-			goodTube_nav_videoEnded();
+		else if (event.data.indexOf('goodTube_videoEnded') !== -1) {
+			let bits = event.data.split('|||');
+
+			goodTube_nav_videoEnded(bits[1]);
 		}
 
 		// Theater mode (toggle) - this should only work when not in fullscreen
@@ -4351,18 +4383,8 @@
 		// });
 
 		// When the video is paused
-		videoElement.addEventListener('pause', function () {
-			// Check if it's ended (sometimes the ended event listener does not fire, this is a Youtube embed bug...)
-			if (document.querySelector('.ended-mode')) {
-				// Sync the main player, this ensures videos register as finished with the little red play bars
-				goodTube_iframe_syncMainPlayer(true);
-
-				console.log('video ended - calling next from iframe');
-
-				// Tell the top frame the video ended
-				window.top.postMessage('goodTube_videoEnded', '*');
-			}
-		});
+		videoElement.removeEventListener('pause', goodTube_iframe_videoEnded);
+		videoElement.addEventListener('pause', goodTube_iframe_videoEnded);
 
 		// // When the video is seeked
 		// videoElement.addEventListener('seeked', function () {
@@ -4376,6 +4398,40 @@
 		// 	}
 		// });
 	}
+
+
+	let goodTube_iframe_videoEnded_timeout = setTimeout(() => {}, 0);
+	function goodTube_iframe_videoEnded() {
+		// Get the video data to check loading state
+		let videoData = false;
+		if (goodTube_iframe_api && typeof goodTube_iframe_api.getVideoData === 'function') {
+			videoData = goodTube_iframe_api.getVideoData();
+		}
+
+		// Keep trying to get the frame API until it exists
+		if (!videoData) {
+			// Clear timeout first to solve memory leak issues
+			clearTimeout(goodTube_iframe_videoEnded_timeout);
+
+			// Create a new timeout
+			goodTube_iframe_videoEnded_timeout = setTimeout(goodTube_iframe_videoEnded, 100);
+
+			return;
+		}
+
+		// Check if it's ended (sometimes the ended event listener does not fire, this is a Youtube embed bug...)
+		if (document.querySelector('.ended-mode')) {
+			// Sync the main player, this ensures videos register as finished with the little red play bars
+			goodTube_iframe_syncMainPlayer(true);
+
+			console.log('video ended - calling next from iframe with video id', videoData.video_id);
+
+			// Tell the top frame the video ended
+			window.top.postMessage('goodTube_videoEnded|||' + videoData.video_id, '*');
+		}
+	}
+
+
 
 	// Add keyboard shortcuts
 	function goodTube_iframe_addKeyboardShortcuts() {
